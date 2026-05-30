@@ -125,7 +125,7 @@ When parallel decoding encounters *format irregularity* (malformed syntax at cat
 ## 🚀 Installation
 
 ```bash
-git clone <repo-url> eagle
+git clone https://github.com/NVlabs/Eagle.git eagle
 cd eagle/Embodied
 pip install -e .
 ```
