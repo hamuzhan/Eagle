@@ -1099,7 +1099,11 @@ class Qwen2Model(Qwen2PreTrainedModel):
         self.layers = nn.ModuleList(
             [Qwen2DecoderLayer(config, layer_idx) for layer_idx in range(config.num_hidden_layers)]
         )
-        self._attn_implementation = config._attn_implementation
+        self._attn_implementation = (
+            config._attn_implementation
+            if config._attn_implementation in ["magi", "sdpa"]
+            else "sdpa"
+        )
         self.norm = Qwen2RMSNorm(config.hidden_size, eps=config.rms_norm_eps)
 
         self.gradient_checkpointing = False

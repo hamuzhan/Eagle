@@ -11,12 +11,15 @@
 
 [[📘Eagle Report](Eagle/Eagle.pdf)] [[📘Eagle 2 Report](Eagle2_5/Eagle2.pdf)] [[📘Eagle 2.5 Report](Eagle2_5/Eagle2.5.pdf)] [[📘LocateAnything Report](https://research.nvidia.com/labs/lpr/locate-anything/LocateAnything.pdf)]
 
-[[🤗Model Collection](https://huggingface.co/collections/nvidia/eagle)] [[🤗LocateAnything Demo](https://huggingface.co/spaces/nvidia/Eagle-2.5-8B-demo)] [[🌐Project Page](https://nvlabs.github.io/Eagle/)]
+[[🤗Model Collection](https://huggingface.co/collections/nvidia/eagle)] [[🤗LocateAnything Demo](https://huggingface.co/spaces/nvidia/LocateAnything)] [[🌐Project Page](https://nvlabs.github.io/Eagle/)]
 
 </div>
 
 
 ## Updates
+- [2026/06] 🎉 LocateAnything is accepted to [ECCV 2026](https://eccv.ecva.net/).
+- [2026/06] 🔥 Release [visual prompt fine-tuning script](./Embodied/shell/locate-anything-lora-visual-prompt.sh) for LocateAnything with LoRA fine-tuning.
+- [2026/06] 🔥 LocateAnything now supports [batch inference](./Embodied/) with a pure FlashAttention runtime — efficient inference on A100, RTX 4090, and other non-Hopper/Blackwell GPUs.
 - [2026/05] 🔥 Release [LocateAnything](./Embodied/) — A generalist vision-language grounding model based on Eagle.
 - [2025/12] 🎉 A native resolution variant of the Eagle model is adopted as the VLM backbone of [GR00T-N1.6](https://huggingface.co/collections/nvidia/gr00t-n16). Check out the [tech blog](https://research.nvidia.com/labs/gear/gr00t-n1_6/) for more details.
 - [2025/10] 🔥 Release Eagle 2.5 [source code](https://github.com/NVlabs/EAGLE/tree/main/Eagle2_5).
@@ -157,41 +160,41 @@ detailed caption: The clip begins with a character with white hair and a beard, 
 ### 📦 LocateAnything Models
 | Model Name  | Date       |   LLM Backbone   |  Vision Encoder  | Max Length | Download |
 | ----------- |------------| ---------------- | ---------------- | ---------- | ------- |
-| LocateAnything-3B | 2026.05.26 | [Qwen2.5-3B-Instruct](https://huggingface.co/Qwen/Qwen2.5-3B-Instruct) | [MoonViT-SO-400M](https://huggingface.co/moonshotai/MoonViT-SO-400M) | 25K | 🤗 [HF Link](https://huggingface.co/nvidia/LocateAnything-3B) |
+| LocateAnything-3B | 2026.05.26 | [Qwen2.5-3B-Instruct](https://huggingface.co/Qwen/Qwen2.5-3B-Instruct) | [MoonViT-SO-400M](https://huggingface.co/moonshotai/MoonViT-SO-400M) | 25K | 🤗 [HF](https://huggingface.co/nvidia/LocateAnything-3B) |
 
 ### 📦 Eagle 2.5 Models
 | Model Name  | Date       |   LLM Backbone   |  Vision Encoder  | Max Length | Download |
 | ----------- |------------| ---------------- | ---------------- | ---------- | ------- |
-| Eagle2.5-8B | 2025.04.16 | [Qwen2.5-7B-Instruct](https://huggingface.co/Qwen/Qwen2.5-7B-Instruct) | [SigLIP2](https://huggingface.co/google/siglip2-so400m-patch16-512) | 128K | 🤗 [HF Link](https://huggingface.co/nvidia/Eagle2-1B) |
+| Eagle2.5-8B | 2025.04.16 | [Qwen2.5-7B-Instruct](https://huggingface.co/Qwen/Qwen2.5-7B-Instruct) | [SigLIP2](https://huggingface.co/google/siglip2-so400m-patch16-512) | 128K | 🤗 [HF](https://huggingface.co/nvidia/Eagle2.5-8B) |
 
 ### 📦 Eagle 2 Models
 | Model Name  | Date       |   LLM Backbone   |  Vision Encoder  | Max Length | Download |
 | ----------- |------------| ---------------- | ---------------- | ---------- | ------- |
-| Eagle2-1B | 2025.01.11 | [Qwen2.5-0.5B-Instruct](https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct) |  [SigLIP](https://huggingface.co/google/paligemma-3b-pt-448)  | 16K | 🤗 [HF Link](https://huggingface.co/nvidia/Eagle2-1B) |
-| Eagle2-2B | 2025.01.11 | [Qwen2.5-1.5B-Instruct](https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct) |  [SigLIP](https://huggingface.co/google/paligemma-3b-pt-448)  | 16K | 🤗 [HF Link](https://huggingface.co/nvidia/Eagle2-2B) |
-| Eagle2-9B | 2025.01.11 | [Qwen2.5-7B-Instruct](https://huggingface.co/Qwen/Qwen2.5-7B-Instruct)     |  [SigLIP](https://huggingface.co/google/paligemma-3b-pt-448) + [ConvNext](https://huggingface.co/laion/CLIP-convnext_xxlarge-laion2B-s34B-b82K-augreg-soup)  | 16K | 🤗 [HF Link](https://huggingface.co/nvidia/Eagle2-9B) |
-| Eagle2-34B | 2025.01.11 | [Qwen2.5-32B-Instruct](https://huggingface.co/Qwen/Qwen2.5-32B-Instruct)  |  [SigLIP](https://huggingface.co/google/paligemma-3b-pt-448) + [ConvNext](https://huggingface.co/laion/CLIP-convnext_xxlarge-laion2B-s34B-b82K-augreg-soup)  | 16K | 🤗 [HF Link](https://huggingface.co/nvidia/Eagle2-34B) |
+| Eagle2-1B | 2025.01.11 | [Qwen2.5-0.5B-Instruct](https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct) |  [SigLIP](https://huggingface.co/google/paligemma-3b-pt-448)  | 16K | 🤗 [HF](https://huggingface.co/nvidia/Eagle2-1B) |
+| Eagle2-2B | 2025.01.11 | [Qwen2.5-1.5B-Instruct](https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct) |  [SigLIP](https://huggingface.co/google/paligemma-3b-pt-448)  | 16K | 🤗 [HF](https://huggingface.co/nvidia/Eagle2-2B) |
+| Eagle2-9B | 2025.01.11 | [Qwen2.5-7B-Instruct](https://huggingface.co/Qwen/Qwen2.5-7B-Instruct)     |  [SigLIP](https://huggingface.co/google/paligemma-3b-pt-448) + [ConvNext](https://huggingface.co/laion/CLIP-convnext_xxlarge-laion2B-s34B-b82K-augreg-soup)  | 16K | 🤗 [HF](https://huggingface.co/nvidia/Eagle2-9B) |
+
 
 ### 📦 Eagle Models
 
 | Model Name  | Date       |   LLM Backbone   |  Vision Encoder  | Download |
 | ----------- |------------| ---------------- | ---------------- | ---------- |
-| Eagle-X4-8B-Plus | 2024.09.16 | [Llama-3-8B-Instruct](https://huggingface.co/meta-llama/Meta-Llama-3-8B-Instruct) |  [CLIP](https://huggingface.co/openai/clip-vit-large-patch14-336)+[ConvNeXt](https://huggingface.co/laion/CLIP-convnext_xxlarge-laion2B-s34B-b82K-augreg-soup)+[EVA](https://huggingface.co/Yuxin-CV/EVA-02/blob/main/eva02/det/eva02_L_coco_det_sys_o365.pth)+[Pix2Str](https://huggingface.co/google/pix2struct-large) | 🤗 [HF Link](https://huggingface.co/NVEagle/Eagle-X4-8B-Plus) |
-| Eagle-X4-13B-Plus | 2024.09.16 | [vicuna-13b-v1.5](https://huggingface.co/lmsys/vicuna-13b-v1.5) |  [CLIP](https://huggingface.co/openai/clip-vit-large-patch14-336)+[ConvNeXt](https://huggingface.co/laion/CLIP-convnext_xxlarge-laion2B-s34B-b82K-augreg-soup)+[EVA](https://huggingface.co/Yuxin-CV/EVA-02/blob/main/eva02/det/eva02_L_coco_det_sys_o365.pth)+[Pix2Str](https://huggingface.co/google/pix2struct-large) | 🤗 [HF Link](https://huggingface.co/NVEagle/Eagle-X4-13B-Plus) |
-| Eagle-X5-34B-Plus | 2024.09.16 | [Yi-34B](https://huggingface.co/01-ai/Yi-34B) |  [CLIP](https://huggingface.co/openai/clip-vit-large-patch14-336)+[ConvNeXt](https://huggingface.co/laion/CLIP-convnext_xxlarge-laion2B-s34B-b82K-augreg-soup)+[EVA](https://huggingface.co/Yuxin-CV/EVA-02/blob/main/eva02/det/eva02_L_coco_det_sys_o365.pth)+[Pix2Str](https://huggingface.co/google/pix2struct-large)+[SAM](https://huggingface.co/facebook/sam-vit-large) | 🤗 [HF Link](https://huggingface.co/NVEagle/Eagle-X5-34B-Plus) |
-| Eagle-X5-7B | 2024.09.16 | [vicuna-7b-v1.5](https://huggingface.co/lmsys/vicuna-7b-v1.5) |  [CLIP](https://huggingface.co/openai/clip-vit-large-patch14-336)+[ConvNeXt](https://huggingface.co/laion/CLIP-convnext_xxlarge-laion2B-s34B-b82K-augreg-soup)+[EVA](https://huggingface.co/Yuxin-CV/EVA-02/blob/main/eva02/det/eva02_L_coco_det_sys_o365.pth)+[Pix2Str](https://huggingface.co/google/pix2struct-large)+[SAM](https://huggingface.co/facebook/sam-vit-large) | 🤗 [HF Link](https://huggingface.co/NVEagle/Eagle-X5-7B) |
-| Eagle-X5-13B | 2024.09.16 | [vicuna-13b-v1.5](https://huggingface.co/lmsys/vicuna-13b-v1.5) |  [CLIP](https://huggingface.co/openai/clip-vit-large-patch14-336)+[ConvNeXt](https://huggingface.co/laion/CLIP-convnext_xxlarge-laion2B-s34B-b82K-augreg-soup)+[EVA](https://huggingface.co/Yuxin-CV/EVA-02/blob/main/eva02/det/eva02_L_coco_det_sys_o365.pth)+[Pix2Str](https://huggingface.co/google/pix2struct-large)+[SAM](https://huggingface.co/facebook/sam-vit-large) | 🤗 [HF Link](https://huggingface.co/NVEagle/Eagle-X5-13B) |
-| Eagle-X5-13B-Chat | 2024.09.16 | [vicuna-13b-v1.5](https://huggingface.co/lmsys/vicuna-13b-v1.5) |  [CLIP](https://huggingface.co/openai/clip-vit-large-patch14-336)+[ConvNeXt](https://huggingface.co/laion/CLIP-convnext_xxlarge-laion2B-s34B-b82K-augreg-soup)+[EVA](https://huggingface.co/Yuxin-CV/EVA-02/blob/main/eva02/det/eva02_L_coco_det_sys_o365.pth)+[Pix2Str](https://huggingface.co/google/pix2struct-large)+[SAM](https://huggingface.co/facebook/sam-vit-large) | 🤗 [HF Link](https://huggingface.co/NVEagle/Eagle-X5-13B-Chat) |
+| Eagle-X4-8B-Plus | 2024.09.16 | [Llama-3-8B-Instruct](https://huggingface.co/meta-llama/Meta-Llama-3-8B-Instruct) |  [CLIP](https://huggingface.co/openai/clip-vit-large-patch14-336)+[ConvNeXt](https://huggingface.co/laion/CLIP-convnext_xxlarge-laion2B-s34B-b82K-augreg-soup)+[EVA](https://huggingface.co/Yuxin-CV/EVA-02/blob/main/eva02/det/eva02_L_coco_det_sys_o365.pth)+[Pix2Str](https://huggingface.co/google/pix2struct-large) | 🤗 [HF](https://huggingface.co/NVEagle/Eagle-X4-8B-Plus) |
+| Eagle-X4-13B-Plus | 2024.09.16 | [vicuna-13b-v1.5](https://huggingface.co/lmsys/vicuna-13b-v1.5) |  [CLIP](https://huggingface.co/openai/clip-vit-large-patch14-336)+[ConvNeXt](https://huggingface.co/laion/CLIP-convnext_xxlarge-laion2B-s34B-b82K-augreg-soup)+[EVA](https://huggingface.co/Yuxin-CV/EVA-02/blob/main/eva02/det/eva02_L_coco_det_sys_o365.pth)+[Pix2Str](https://huggingface.co/google/pix2struct-large) | 🤗 [HF](https://huggingface.co/NVEagle/Eagle-X4-13B-Plus) |
+| Eagle-X5-34B-Plus | 2024.09.16 | [Yi-34B](https://huggingface.co/01-ai/Yi-34B) |  [CLIP](https://huggingface.co/openai/clip-vit-large-patch14-336)+[ConvNeXt](https://huggingface.co/laion/CLIP-convnext_xxlarge-laion2B-s34B-b82K-augreg-soup)+[EVA](https://huggingface.co/Yuxin-CV/EVA-02/blob/main/eva02/det/eva02_L_coco_det_sys_o365.pth)+[Pix2Str](https://huggingface.co/google/pix2struct-large)+[SAM](https://huggingface.co/facebook/sam-vit-large) | 🤗 [HF](https://huggingface.co/NVEagle/Eagle-X5-34B-Plus) |
+| Eagle-X5-7B | 2024.09.16 | [vicuna-7b-v1.5](https://huggingface.co/lmsys/vicuna-7b-v1.5) |  [CLIP](https://huggingface.co/openai/clip-vit-large-patch14-336)+[ConvNeXt](https://huggingface.co/laion/CLIP-convnext_xxlarge-laion2B-s34B-b82K-augreg-soup)+[EVA](https://huggingface.co/Yuxin-CV/EVA-02/blob/main/eva02/det/eva02_L_coco_det_sys_o365.pth)+[Pix2Str](https://huggingface.co/google/pix2struct-large)+[SAM](https://huggingface.co/facebook/sam-vit-large) | 🤗 [HF](https://huggingface.co/NVEagle/Eagle-X5-7B) |
+| Eagle-X5-13B | 2024.09.16 | [vicuna-13b-v1.5](https://huggingface.co/lmsys/vicuna-13b-v1.5) |  [CLIP](https://huggingface.co/openai/clip-vit-large-patch14-336)+[ConvNeXt](https://huggingface.co/laion/CLIP-convnext_xxlarge-laion2B-s34B-b82K-augreg-soup)+[EVA](https://huggingface.co/Yuxin-CV/EVA-02/blob/main/eva02/det/eva02_L_coco_det_sys_o365.pth)+[Pix2Str](https://huggingface.co/google/pix2struct-large)+[SAM](https://huggingface.co/facebook/sam-vit-large) | 🤗 [HF](https://huggingface.co/NVEagle/Eagle-X5-13B) |
+| Eagle-X5-13B-Chat | 2024.09.16 | [vicuna-13b-v1.5](https://huggingface.co/lmsys/vicuna-13b-v1.5) |  [CLIP](https://huggingface.co/openai/clip-vit-large-patch14-336)+[ConvNeXt](https://huggingface.co/laion/CLIP-convnext_xxlarge-laion2B-s34B-b82K-augreg-soup)+[EVA](https://huggingface.co/Yuxin-CV/EVA-02/blob/main/eva02/det/eva02_L_coco_det_sys_o365.pth)+[Pix2Str](https://huggingface.co/google/pix2struct-large)+[SAM](https://huggingface.co/facebook/sam-vit-large) | 🤗 [HF](https://huggingface.co/NVEagle/Eagle-X5-13B-Chat) |
 
 
 
 ## Citation
 If you find this project useful, please consider citing our works:
 ```latex
-@article{wang2025locateanything,
+@inproceedings{wang2025locateanything,
     title={LocateAnything: Fast and High-Quality Vision-Language Grounding with Parallel Box Decoding},
     author={Shihao Wang and Shilong Liu and Yuanguo Kuang and Xinyu Wei and Yangzhou Liu and Zhiqi Li and Yunze Man and Guo Chen and Andrew Tao and Guilin Liu and Jan Kautz and Lei Zhang and Zhiding Yu},
-    journal={arXiv:2605.27365},
+    booktitle={ECCV},
     year={2026}
 }
 ```
@@ -200,8 +203,8 @@ If you find this project useful, please consider citing our works:
 @inproceedings{man2025locateanything3d,
     title   = {LocateAnything3D: Vision-Language 3D Detection with Chain-of-Sight},
     author  = {Yunze Man and Shihao Wang and Guowen Zhang and Johan Bjorck and Zhiqi Li and Liang-Yan Gui and Jim Fan and Jan Kautz and Yu-Xiong Wang and Zhiding Yu},
-    journal = {arXiv preprint arXiv:2511.20648},
-    year    = {2025},
+    booktitle = {CVPR},
+    year    = {2026},
 }
 ```
 

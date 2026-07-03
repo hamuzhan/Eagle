@@ -16,12 +16,21 @@
 </div>
 
 
+## Updates
+
+- [2026/06] 🎉 LocateAnything is accepted to [ECCV 2026](https://eccv.ecva.net/).
+- [2026/06] 🔥 Release [visual prompt fine-tuning script](shell/locate-anything-lora-visual-prompt.sh) for LocateAnything, with LoRA fine-tuning for efficient adaptation.
+- [2026/06] 🔥 Release batch inference with the optional `la_flash` runtime for efficient inference on A100, RTX 4090, and other non-Hopper/Blackwell GPUs.
+- [2026/05] 🔥 Release LocateAnything, a generalist vision-language grounding model based on Eagle.
+
 **LocateAnything** is a vision-language model for fast and high-quality visual grounding, enabling precise object localization, dense detection, and point-based localization across diverse domains in both Enterprise Intelligence and Physical AI. The model adopts a generalist design, supporting tasks such as referring expression grounding, multi-object detection, GUI element grounding, and text localization, with strong performance in complex and cluttered scenes.
 
 - ⚡ **Parallel Box Decoding (PBD)** — atomic, single-step decoding of full bounding boxes / points.
 - 🔁 **Hybrid Inference** — Fast Mode (MTP) by default, with seamless NTP fallback for stability.
 - 📚 **LocateAnything-Data** — 138M language queries, 785M boxes, covering detection, GUI grounding, referring comprehension, OCR, layout, and pointing.
 - 🏆 **State-of-the-Art** — 12.7 BPS on a single H100 (≈ 10× Qwen3-VL, 2.5× Rex-Omni), with SOTA accuracy on LVIS, M6Doc, ScreenSpot-Pro, and more.
+
+> **Note:** The currently released `nvidia/LocateAnything-3B` weights do **not** support visual prompt inference out of the box. Visual-prompt-capable weights will be released in a future version.
 
 
 ## 🎬 Visual Demo
@@ -148,7 +157,7 @@ pip install -r requirements.txt
 pip install --no-build-isolation .
 ```
 
-> For non-Hopper/Blackwell GPUs (A100, L40, etc.), use `--attn_implementation sdpa`, which only supports sequences up to ~4K tokens.
+> For non-Hopper/Blackwell GPUs (A100, L40, etc.), the Hugging Face model release also includes the `la_flash` batch runtime described below. It uses FlashAttention varlen sparse range plans and avoids the dense SDPA masks used by the stock path.
 
 </details>
 
@@ -181,6 +190,64 @@ print(worker.point(img, "the traffic light")["answer"])
 ```
 
 See [`locateanything_worker.py`](locateanything_worker.py) for the full worker API.
+
+## 🚀 Batch Inference Release
+
+The [Hugging Face model repository](https://huggingface.co/nvidia/LocateAnything-3B) now includes optional high-throughput inference utilities:
+
+- `batch_infer.py`: JSONL/image-query batch inference CLI.
+- `batch_utils/`: batched hybrid MTP/NTP scheduler and sampling runtime.
+- `kernel_utils/`: **LA Flash** sparse range utilities implemented with FlashAttention varlen. This path does not build or ship a custom C++/CUDA extension.
+
+`LA_FLASH_ATTN=la_flash` keeps LocateAnything's hybrid decoding path while running sparse range plans through FlashAttention. It is intended for inference/evaluation; training should continue to use the standard model code path.
+
+```bash
+hf download nvidia/LocateAnything-3B --local-dir LocateAnything-3B
+cd LocateAnything-3B
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+python batch_infer.py \
+  --model . \
+  --attn la_flash \
+  --vision-attn flash_attention_2 \
+  --scheduler pipeline \
+  --batch-size 4 \
+  --image /path/to/image.jpg \
+  --query "person</c>car"
+```
+
+A100 4K probe, real 3840x2160 street image, `query=vehicle`, `batch_size=4`, raw PIL input, `in_token_limit=25600`, hybrid MTP inference:
+
+| Backend | Attention path | Time | Peak reserved memory |
+|:--|:--|--:|--:|
+| `sdpa` | Dense SDPA masks | 8.2600 s | 35.12 GB |
+| `la_flash` | FlashAttention sparse range plan | 8.0314 s | 11.71 GB |
+
+The worker API can also use the released batch runtime when `batch_utils/` and `kernel_utils/` are on `PYTHONPATH`:
+
+```python
+from PIL import Image
+from locateanything_worker import LocateAnythingWorker
+
+worker = LocateAnythingWorker(
+    "nvidia/LocateAnything-3B",
+    use_batch_runtime=True,
+    attn="la_flash",
+    vision_attn="flash_attention_2",
+    scheduler="pipeline",
+)
+
+img1 = Image.open("street_1.jpg").convert("RGB")
+img2 = Image.open("street_2.jpg").convert("RGB")
+
+results = worker.detect_batch([
+    (img1, ["person", "car"]),
+    (img2, ["traffic light", "bus"]),
+])
+
+for result in results:
+    print(result["answer"])
+```
 
 ### 🧾 Output Format
 
@@ -228,6 +295,47 @@ For the complete training guide (all arguments, data recipe format, multi-node s
 
 For data format details, annotation conventions, and recipe configuration, see **[Data Preparation](document/DATA_PREPARATION.md)**.
 
+### Visual Prompt Fine-Tuning
+
+We release visual prompt fine-tuning support for tasks where an image crop is used as the query instead of a category name. During training, datasets marked with `visual_prompt=true` automatically convert positive single-category detection prompts into cropped visual prompts from the source image. The source image remains the target image, and the crop is appended as an additional image placeholder.
+
+> **Important:** The public `nvidia/LocateAnything-3B` checkpoint does **not** currently support visual prompt inference. Use the released code to fine-tune on your own visual prompt data. Official visual-prompt-capable weights will be released in a future version.
+
+Add `visual_prompt: true` to the datasets that should be converted into visual prompt training samples:
+
+```json
+{
+  "my_visual_prompt_data": {
+    "annotation": "path/to/visual_prompt.jsonl",
+    "root": "/data/images/",
+    "repeat_time": 1.0,
+    "data_augment": true,
+    "visual_prompt": true
+  }
+}
+```
+
+### LoRA Fine-Tuning
+
+We also provide LoRA fine-tuning support for parameter-efficient adaptation. LoRA is useful when you want to adapt LocateAnything without updating all model parameters; by default, the released script enables LLM LoRA (`USE_LLM_LORA=64`), keeps the LLM and vision backbone frozen, and leaves the MLP projector trainable.
+
+Launch the visual prompt LoRA fine-tuning script with:
+
+```bash
+export HF_TOKEN=your_hf_token
+export META_PATH=./locany_recipe/visual_prompt_recipe.json
+
+bash shell/locate-anything-lora-visual-prompt.sh 1 work_dirs/locany_lora_visual_prompt
+```
+
+Useful environment overrides:
+
+- `MODEL_PATH`: base checkpoint or local model path, default `nvidia/LocateAnything-3B`.
+- `USE_LLM_LORA`: LLM LoRA rank, default `64`; set `0` to disable.
+- `USE_BACKBONE_LORA`: vision-backbone LoRA rank, default `0`; set a positive value to enable.
+- `FREEZE_LLM`, `FREEZE_BACKBONE`, `FREEZE_MLP`: control which base modules are frozen.
+- `MAX_STEPS`, `LR`, `SAVE_STEPS`, `MAX_SEQ_LENGTH`: standard training schedule and context-length controls.
+
 
 ## 📈 Evaluation
 
@@ -267,7 +375,6 @@ See the [Evaluation Guide](evaluation/README.md) for setup and dataset preparati
 | **ScreenSpot-Pro** | Avg | **60.3** | **+2.3** vs. GUI-Owl-32B |
 | **HumanRef** | F1@0.95 | **68.8** | **+3.4** vs. Rex-Omni |
 | **RefCOCOg val** | F1@Mean | **76.7** | **+2.0** vs. Qwen3-VL-8B |
-| **Pointing** (7 benchmarks) | — | **Best on all 7** | ✅ |
 
 </div>
 
